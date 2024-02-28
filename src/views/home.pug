@@ -1,8 +1,15 @@
-doctype html
-html(lang="ko")
-	head
-		title Wetube
+extends base
+include mixins/video
 
-	body
-		h1 Welcome to Wetube 
-	include partials/footer.pug
+block uploadVideo
+	nav
+		ul 
+			li 
+				a(href="/videos/upload") Upload Video
+
+block content
+	h2 Welcome here you will see the trending vidoes
+	each potato in videos
+		+video(potato)
+	else
+		li Sorry nothing found.
