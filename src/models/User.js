@@ -9,10 +9,17 @@ const userSchema = new mongoose.Schema({
    password: { type: String },
    name: { type: String, required: true },
    location: String,
+   videos: [
+      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Video' },
+   ],
 });
 
+// user를 save, 즉 user.save()를 할때마다 userSchema.pre("save")를 거쳐서 데이터를 저장하고 있다.
+// 이것은 좋지 못하다.
 userSchema.pre('save', async function () {
-   this.password = await bcrypt.hash(this.password, 10);
+   if (this.isModified('password')) {
+      this.password = await bcrypt.hash(this.password, 10);
+   }
 });
 
 const User = mongoose.model('User', userSchema);
