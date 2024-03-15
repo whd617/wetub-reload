@@ -13,8 +13,8 @@ const logger = morgan('dev');
 app.set('view engine', 'pug'); // 뷰 엔진을 pug로 설정
 app.set('views', process.cwd() + '/src/views'); // 뷰 엔진의 디렉토리 경로 변경하기
 app.use(logger);
-app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // 위치 중요!
+app.use(express.json());
 
 app.use(
    session({
@@ -26,17 +26,6 @@ app.use(
       }), // MongoDB에 세션정보가 들어가게 하는 기능(세션들을 database에 저장하도록 만든것이다.)
    }),
 );
-
-app.use((req, res, next) => {
-   req.sessionStore.all((error, sessions) => {
-      next();
-   });
-});
-
-app.get('/add-one', (req, res, next) => {
-   req.session.potato += 1;
-   return res.send(`${req.session.id}\n${req.session.potato}`);
-});
 
 app.use(localMiddleware);
 //파일을 노출시키는 방법: express.static()
