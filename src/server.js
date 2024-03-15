@@ -5,6 +5,7 @@ import MongoStore from 'connect-mongo';
 import rootRouter from './routers/rootRouter';
 import userRouter from './routers/userRouter';
 import videoRouter from './routers/videoRouter';
+import apiRouter from './routers/apiRouter';
 import { localMiddleware } from './middlewares';
 
 const app = express(); // express function을 사용하면 express application을 생성해준다.
@@ -34,5 +35,6 @@ app.use('/static', express.static('assets'));
 app.use('/', rootRouter);
 app.use('/videos', videoRouter);
 app.use('/users', userRouter);
+app.use('/api', apiRouter);
 
 export default app;
