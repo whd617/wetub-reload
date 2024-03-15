@@ -1,7 +1,6 @@
 import multer from 'multer';
 
 export const localMiddleware = (req, res, next) => {
-   console.log(req.sessionID);
    res.locals.loggedIn = Boolean(req.session.loggedIn);
    res.locals.siteName = 'Wetube';
    // loggedInUser는 req.session.user인데, 이게 undefined일 수 가 있다.

@@ -1,6 +1,5 @@
 import User from '../models/User';
 import bcrypt from 'bcrypt';
-import Video from '../models/Video';
 
 export const getJoin = (req, res) => res.render('join', { pageTitle: 'Join' });
 export const postJoin = async (req, res) => {
@@ -31,7 +30,6 @@ export const postJoin = async (req, res) => {
       });
       return res.redirect('/login');
    } catch (error) {
-      console.log('이건 무슨 에러야?', error);
       return res.status(400).render('join', {
          pageTitle,
          errorMessage: error._message,
@@ -165,7 +163,7 @@ export const postEdit = async (req, res) => {
    } = req;
    const emailExists =
       email !== sessionEamil ? await User.exists({ email }) : undefined;
-   console.log('emailExists', emailExists);
+   console.log('emailExists', sessionEamil);
    const usernameExists =
       username !== sessionUsername
          ? await User.exists({ username })
@@ -249,7 +247,13 @@ export const postChangePassword = async (req, res) => {
 // 이 API는 모든 사용자에게 보여주기 위해서 req.session에서 안가져오고 API params에서 가져올 것이다.
 export const see = async (req, res) => {
    const { id } = req.params;
-   const user = await User.findById(id).populate('videos');
+   const user = await User.findById(id).populate({
+      path: 'videos',
+      populate: {
+         path: 'owner',
+         model: 'User',
+      },
+   });
    console.log(user);
    if (!user) {
       return res.status(404).render('404', { pageTitle: 'User not found.' });
