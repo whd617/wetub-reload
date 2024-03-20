@@ -140,6 +140,7 @@ export const finishGithubLogin = async (req, res) => {
 };
 export const logout = (req, res) => {
    req.session.destroy();
+   req.flash('info', 'Bye Bye'); // 사용자에게 알림보내기
    return res.redirect('/');
 };
 export const getEdit = (req, res) => {
@@ -205,6 +206,7 @@ export const postEdit = async (req, res) => {
 
 export const getChangePassword = (req, res) => {
    if (req.session.user.socialOnly === true) {
+      req.flash('error', "Can't change password");
       return res.redirect('/');
    }
    return res.render('users/change-password', {
@@ -240,7 +242,7 @@ export const postChangePassword = async (req, res) => {
    }
    user.password = newPassword;
    await user.save(); // 이것만 처리해도 User의 schema의 pre save middleware를 거쳐 data를 업데이트 한다.
-
+   req.flash('info', 'Password updated');
    return res.redirect('/users/logout'); // 비밀번호 변경 후 로그아웃
 };
 
