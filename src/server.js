@@ -1,6 +1,7 @@
 import express from 'express'; // express도 export default로 구성되어져 있다.
 import morgan from 'morgan';
 import session from 'express-session';
+import flash from 'express-flash';
 import MongoStore from 'connect-mongo';
 import rootRouter from './routers/rootRouter';
 import userRouter from './routers/userRouter';
@@ -16,7 +17,11 @@ app.set('views', process.cwd() + '/src/views'); // 뷰 엔진의 디렉토리 �
 app.use(logger);
 app.use(express.urlencoded({ extended: true })); // 위치 중요!
 app.use(express.json());
-
+app.use((req, res, next) => {
+   res.header('Cross-Origin-Embedder-Policy', 'require-corp');
+   res.header('Cross-Origin-Opener-Policy', 'same-origin');
+   next();
+});
 app.use(
    session({
       secret: process.env.COOKIE_SECRET,
@@ -27,7 +32,7 @@ app.use(
       }), // MongoDB에 세션정보가 들어가게 하는 기능(세션들을 database에 저장하도록 만든것이다.)
    }),
 );
-
+app.use(flash());
 app.use(localMiddleware);
 //파일을 노출시키는 방법: express.static()
 app.use('/uploads', express.static('uploads'));
