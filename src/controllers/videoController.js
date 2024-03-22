@@ -14,7 +14,6 @@ export const watch = async (req, res) => {
    const video = await Video.findById(id)
       .populate('owner')
       .populate('comments');
-   console.log(video);
    if (!video) {
       return res.render('404', { pageTitle: 'Video not found' });
    }
@@ -89,7 +88,6 @@ export const postUpload = async (req, res) => {
       user.save();
       return res.redirect('/');
    } catch (error) {
-      console.log(error);
       return res.status(400).render('upload', {
          pageTitle: `Uploaded Vidoe`,
          errorMessage: error._message,
