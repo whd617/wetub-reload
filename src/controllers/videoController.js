@@ -1,4 +1,5 @@
 import User from '../models/User';
+import Comment from '../models/Comment';
 import Video from '../models/Video';
 
 export const home = async (req, res) => {
@@ -10,7 +11,10 @@ export const home = async (req, res) => {
 
 export const watch = async (req, res) => {
    const { id } = req.params; //-> ES6 형식으로 작성된 방식: const id =req.params.id; 이것과 동일
-   const video = await Video.findById(id).populate('owner');
+   const video = await Video.findById(id)
+      .populate('owner')
+      .populate('comments');
+   console.log(video);
    if (!video) {
       return res.render('404', { pageTitle: 'Video not found' });
    }
@@ -39,7 +43,7 @@ export const postEdit = async (req, res) => {
       user: { _id },
    } = req.session;
    const { title, description, hashtags } = req.body;
-   const video = await Video.exists({ _id: id });
+   const video = await Video.findById(id);
 
    if (!video) {
       return res.status(404).render('404', { pageTitle: 'Video not found' });
@@ -51,9 +55,10 @@ export const postEdit = async (req, res) => {
    });
 
    if (String(video.owner) !== String(_id)) {
-      req.flash('error', 'You are not the owner of th video.'); // 사용자에게 알림보내기
+      req.flash('error', 'You are not the owner of the video.'); // 사용자에게 알림보내기
       return res.status(403).redirect('/');
    }
+
    req.flash('success', 'Changes saved.');
    return res.redirect(`/videos/${id}`);
 };
@@ -99,7 +104,8 @@ export const deleteVideo = async (req, res) => {
    } = req.session;
 
    // populate 없이 잘 돌아간다면 populate를 안써도 된다.
-   const video = await User.findById(id);
+   const video = await Video.findById(id);
+   const user = await User.findById(_id);
 
    if (!video) {
       return res.status(404).render('404', { pageTitle: 'Video not found' });
@@ -107,8 +113,9 @@ export const deleteVideo = async (req, res) => {
    if (String(video.owner) !== String(_id)) {
       return res.status(403).redirect('/');
    }
-   console.log(video);
    await Video.findByIdAndDelete(id);
+   user.videos.splice(user.videos.indexOf(video.id), 1);
+   user.save();
    return res.redirect('/');
 };
 
@@ -134,4 +141,43 @@ export const registerView = async (req, res) => {
    video.meta.views += 1;
    await video.save();
    return res.sendStatus(200);
+};
+
+export const createComment = async (req, res) => {
+   const {
+      session: { user },
+      body: { text },
+      params: { id },
+   } = req;
+
+   const video = await Video.findById(id);
+   if (!video) {
+      return res.sendStatus(404);
+   }
+
+   const comment = await Comment.create({
+      text,
+      owner: user._id,
+      video: id,
+   });
+   video.comments.push(comment._id);
+   video.save();
+   return res.status(201).json({ newCommentId: comment._id });
+};
+
+export const deleteComment = async (req, res) => {
+   const {
+      session: { user },
+      params: { id },
+   } = req;
+   const comment = await Comment.findById(id);
+   if (!comment) {
+      return res.sendStatus(404);
+   }
+
+   if (String(user._id) !== String(comment.owner)) {
+      return res.sendStatus(403);
+   }
+   await Comment.findByIdAndDelete(id);
+   return res.status(200).send({ message: 'success' });
 };
