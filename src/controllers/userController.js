@@ -139,7 +139,9 @@ export const finishGithubLogin = async (req, res) => {
    }
 };
 export const logout = (req, res) => {
-   req.session.destroy();
+   req.session.user = null;
+   req.session.loggedIn = false;
+   // req.session.destroy(); flash를 사용하게 되면은 사용못한다.
    req.flash('info', 'Bye Bye'); // 사용자에게 알림보내기
    return res.redirect('/');
 };

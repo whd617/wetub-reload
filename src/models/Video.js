@@ -10,6 +10,9 @@ const videoSchema = new mongoose.Schema({
    meta: {
       views: { type: Number, default: 0, required: true },
    },
+   comments: [
+      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Comment' },
+   ],
    // mongoose에게 owner에 id를 저장하겠다고 알려주기 위함 -> ref: 'User'
    // 어떤 model의 objectId 라고 알려줄거야. 여기서는 User model
    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

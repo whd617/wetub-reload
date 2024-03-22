@@ -17,6 +17,7 @@
 @import './screens/profile.scss';
 @import './screens/edit-profile.scss';
 @import './screens/upload.scss';
+@import './screens/watch.scss';
 
 // Defaults
 a {
@@ -62,7 +63,9 @@ main {
    text-align: center;
    animation: goAway 0.5s ease-in-out forwards;
    animation-delay: 5s;
-   &.error {
+   &.error,
+   &.info,
+   &.success {
       background-color: tomato;
       color: white;
    }
