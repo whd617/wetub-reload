@@ -7,8 +7,12 @@
       "url": "git+https://github.com/whd617/wetub-reload.git"
    },
    "scripts": {
+      "start": "node build/init.js",
+      "build": "npm run build:server && npm run build:assets",
+      "build:server": "babel src -d build",
+      "build:assets": "webpack --mode=production",
       "dev:server": "nodemon",
-      "dev:assets": "webpack"
+      "dev:assets": "webpack --mode=development -w"
    },
    "author": "",
    "license": "MIT",
@@ -33,7 +37,8 @@
       "pug": "^3.0.2"
    },
    "devDependencies": {
-      "@babel/core": "^7.23.9",
+      "@babel/cli": "^7.24.1",
+      "@babel/core": "^7.24.3",
       "@babel/node": "^7.23.9",
       "@babel/preset-env": "^7.23.9",
       "babel-loader": "^9.1.3",
