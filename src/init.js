@@ -5,7 +5,7 @@ import './models/User';
 import './models/Comment';
 import app from './server';
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 connect(); // mongoDB Atlas를 사용시 꼭 연결해줘야한다.
 
 const handleListening = () =>
