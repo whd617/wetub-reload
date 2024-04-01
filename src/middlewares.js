@@ -1,4 +1,16 @@
 import multer from 'multer';
+import multerS3 from 'multer-s3';
+import { S3Client } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({
+   region: process.env.AWS_REGION,
+});
+
+const multerUploader = multerS3({
+   s3: s3,
+   bucket: process.env.AWS_BUCKET,
+   acl: 'public-read',
+});
 
 export const localMiddleware = (req, res, next) => {
    res.locals.loggedIn = Boolean(req.session.loggedIn);
@@ -34,7 +46,8 @@ export const publicOnlyMiddleware = (req, res, next) => {
 // 파일 업로드 middleware
 // 사용자가 보낸 파일을 uploads 폴더에 저장하도록 설정된 middleware
 export const avatarUpload = multer({
-   dest: 'uploads/avatars',
+   dest: 'uploads/avatars/',
+   storage: multerUploader,
    limits: {
       fileSize: 3000000,
    },
@@ -43,6 +56,7 @@ export const avatarUpload = multer({
 // fileSize 최대 10000 bytes
 export const videoUpload = multer({
    dest: 'uploads/videos/',
+   storage: multerUploader,
    limits: {
       fileSize: 10000000,
    },

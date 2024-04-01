@@ -38,6 +38,7 @@ export const postJoin = async (req, res) => {
 };
 export const getLogin = async (req, res) =>
    res.render('login', { pageTitle: 'Login' });
+
 export const postLogin = async (req, res) => {
    const { username, password } = req.body;
    const { pageTitle } = 'Login';
@@ -148,6 +149,7 @@ export const logout = (req, res) => {
 export const getEdit = (req, res) => {
    return res.render('edit-profile', { pageTitle: 'Edit Profile' });
 };
+
 export const postEdit = async (req, res) => {
    //req.session에 있는 user object에서 id를 찾을 수 있다. req.session.user;
    // 아래와 같은 방법은 const id = req.session.user.id;  와 같은 방법이다
@@ -164,9 +166,9 @@ export const postEdit = async (req, res) => {
       body: { name, email, username, location },
       file,
    } = req;
+
    const emailExists =
       email !== sessionEamil ? await User.exists({ email }) : undefined;
-   console.log('emailExists', sessionEamil);
    const usernameExists =
       username !== sessionUsername
          ? await User.exists({ username })
@@ -188,7 +190,7 @@ export const postEdit = async (req, res) => {
    const updatedUser = await User.findByIdAndUpdate(
       _id,
       {
-         avatarUrl: file ? file.path : avatarUrl,
+         avatarUrl: file ? file.location : avatarUrl,
          name,
          email,
          username,

@@ -18,7 +18,8 @@ app.use(logger);
 app.use(express.urlencoded({ extended: true })); // 위치 중요!
 app.use(express.json());
 app.use((req, res, next) => {
-   res.header('Cross-Origin-Embedder-Policy', 'require-corp');
+   // res.header("Cross-Origin-Embedder-Policy", "require-corp");
+   res.header('Cross-Origin-Embedder-Policy', 'credentialless');
    res.header('Cross-Origin-Opener-Policy', 'same-origin');
    next();
 });
