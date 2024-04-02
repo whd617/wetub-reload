@@ -77,11 +77,12 @@ const formateTime = (seconds) =>
    new Date(seconds * 1000).toISOString().substr(14, 5);
 
 const handleLoadedMetadata = () => {
-   totalTime.innerText = formateTime(Math.floor(video.duration));
-   // video의 maximum 설정
-   timeline.max = Math.floor(video.duration);
+   if (!isNaN(video.duration)) {
+      totalTime.innerText = formateTime(Math.floor(video.duration));
+      // video의 maximum 설정
+      timeline.max = Math.floor(video.duration);
+   }
 };
-
 const handleTimeUpdate = () => {
    currentTiem.innerText = formateTime(Math.floor(video.currentTime));
    timeline.value = Math.floor(video.currentTime);
@@ -135,7 +136,7 @@ const handleEnded = () => {
 playBtn.addEventListener('click', handlePlayClick);
 muteBtn.addEventListener('click', handleMuteClick);
 volumeRange.addEventListener('input', handleVolumeChange);
-video.addEventListener('loadedmetadata', handleLoadedMetadata);
+video.addEventListener('canplay', handleLoadedMetadata);
 video.addEventListener('timeupdate', handleTimeUpdate); //timeupdate event는 video만 사용 가능
 video.addEventListener('click', handlePlayClick);
 video.addEventListener('ended', handleEnded); //timeupdate event는 video만 사용 가능
@@ -144,3 +145,4 @@ videoContainer.addEventListener('mousemove', handleMouseMove);
 videoContainer.addEventListener('mouseleave', handleMouseLeave);
 timeline.addEventListener('input', handleTimelineChange);
 fullScreenBtn.addEventListener('click', handleFullScreen);
+handleLoadedMetadata();
