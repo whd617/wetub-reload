@@ -6,10 +6,28 @@ const s3 = new S3Client({
    region: process.env.AWS_REGION,
 });
 
-const multerUploader = multerS3({
+const isHeroku = process.env.NODE_ENV === 'production';
+
+const s3ImageUploader = multerS3({
    s3: s3,
    bucket: process.env.AWS_BUCKET,
    acl: 'public-read',
+   key: function (req, file, cb) {
+      const newFileName = Date.now() + '-' + file.originalname;
+      const fullPath = 'images/' + newFileName;
+      cb(null, fullPath);
+   },
+});
+
+const s3VideoUploader = multerS3({
+   s3: s3,
+   bucket: process.env.AWS_BUCKET,
+   acl: 'public-read',
+   key: function (req, file, cb) {
+      const newFileName = Date.now() + '-' + file.originalname;
+      const fullPath = 'videos/' + newFileName;
+      cb(null, fullPath);
+   },
 });
 
 export const localMiddleware = (req, res, next) => {
@@ -17,6 +35,7 @@ export const localMiddleware = (req, res, next) => {
    res.locals.siteName = 'Wetube';
    // loggedInUser는 req.session.user인데, 이게 undefined일 수 가 있다.
    res.locals.loggedInUser = req.session.user || {};
+   res.locals.isHeroku = isHeroku; // 템플릿에서 local로 heroku에 접속했는지 안했는지 true, false로 알 수 있음
    next();
 };
 
@@ -47,7 +66,7 @@ export const publicOnlyMiddleware = (req, res, next) => {
 // 사용자가 보낸 파일을 uploads 폴더에 저장하도록 설정된 middleware
 export const avatarUpload = multer({
    dest: 'uploads/avatars/',
-   storage: multerUploader,
+   storage: isHeroku ? s3ImageUploader : undefined,
    limits: {
       fileSize: 3000000,
    },
@@ -56,7 +75,7 @@ export const avatarUpload = multer({
 // fileSize 최대 10000 bytes
 export const videoUpload = multer({
    dest: 'uploads/videos/',
-   storage: multerUploader,
+   storage: isHeroku ? s3VideoUploader : undefined,
    limits: {
       fileSize: 10000000,
    },
