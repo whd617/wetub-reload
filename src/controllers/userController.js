@@ -205,7 +205,7 @@ export const postEdit = async (req, res) => {
    // ..req.session.user에 있는 email, username을 덮어쓸 것이기 때문에 ..req.session.user를 상단에 배치
    req.session.user = updatedUser;
 
-   return res.redirect('/users/edit');
+   return res.redirect('/');
 };
 
 export const getChangePassword = (req, res) => {
